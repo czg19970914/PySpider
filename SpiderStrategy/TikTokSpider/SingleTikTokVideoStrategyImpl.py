@@ -16,6 +16,9 @@ class SingleTikTokVideoStrategy(SpiderStrategyInterface):
     __user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
 
     def get_content(self, url: str):
+        self.__spider(url)
+
+    def __spider(self, url: str):
         print("开始抖音视频爬取......")
         headers = {
             # Referer 防盗链 告诉服务器你请求链接是从哪里跳转过来的
@@ -46,7 +49,7 @@ class SingleTikTokVideoStrategy(SpiderStrategyInterface):
         print("爬取完成")
 
     def set_cookie(self, cookie: str):
-        pass
+        self.__cookie = cookie
 
     def set_user_agent(self, user_agent: str):
-        pass
+        self.__user_agent = user_agent
