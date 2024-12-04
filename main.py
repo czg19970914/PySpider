@@ -6,7 +6,7 @@ if __name__ == "__main__":
     spider = Spider()
 
     # Bilibili单个视频爬取
-    url = "https://www.bilibili.com/video/BV1AfziYmEtq/"
+    url = "https://www.bilibili.com/video/BV1a5mDYpEhc/"
     singleBilibiliVideoStrategy = SingleBilibiliVideoStrategy()
     spider.setSpiderStrategy(singleBilibiliVideoStrategy)
     spider.getContent(url)

@@ -7,6 +7,12 @@ from SpiderStrategy.SpiderStrategyInterface import SpiderStrategyInterface
 
 
 class SingleYouTubeVideoStrategy(SpiderStrategyInterface):
+    def set_cookie(self, cookie: str):
+        pass
+
+    def set_user_agent(self, user_agent: str):
+        pass
+
     def get_content(self, url):
         self.__spider(url)
 

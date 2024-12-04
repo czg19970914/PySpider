@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-import subprocess
 import time
 import requests
 import hashlib
@@ -13,6 +12,32 @@ from Utils.DownloadUtils import DownloadUtils
 
 class SingleBilibiliVideoStrategy(SpiderStrategyInterface):
     __save_dir_name = 'BilibiliVideo'
+    __cookie = ("CURRENT_FNVAL=4048; buvid3=291F6CD9-AE81-5041-66BB-C6570C10199689909infoc; b_nut=1727956989; "
+                "_uuid=10FD2F1EE-1087C-A3E7-5311-5C9951103986F90506infoc; "
+                "buvid4=F1B3D5A3-9F01-8A29-BCBB-4653B9ACC04890525-024100312-hGb8GhyCXnf9C1xrfP1UYw%3D%3D; "
+                "enable_web_push=DISABLE; home_feed_column=5; browser_resolution=1432-782; DedeUserID=34755469; "
+                "DedeUserID__ckMd5=25f688f3014c8d3f; LIVE_BUVID=AUTO4017279570403239; PVID=1; "
+                "header_theme_version=CLOSE; fingerprint=49cc01ae66394e9c1d0dfae03e88f174; "
+                "buvid_fp_plain=undefined; buvid_fp=49cc01ae66394e9c1d0dfae03e88f174; bsource=search_bing; "
+                "bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9"
+                ".eyJleHAiOjE3MzM0MDM5OTksImlhdCI6MTczMzE0NDczOSwicGx0IjotMX0"
+                ".KlnrSNt4eiZ70fztvQBf1KKR5zftvKcJcfYqnv_mOck; bili_ticket_expires=1733403939; "
+                "SESSDATA=a9eb2bc7%2C1748696800%2C007a2"
+                "%2Ac2CjAWsFkmJNFJdjdPEMyDid7SozOEJUwGPg5Bb2p7_"
+                "59s81tniyOKUYXv03v6MF3ee3ISVkdTV0JEbkZIeHljTjQ5ajVjanROY2hpdnRialA2cVlIRFBFcVNy"
+                "R3ZSRHFCMjRZZFBIRVd3WTExcmgyUW1ZNUZHM3dBc2NtWEc3bHNCeTBTMkJxVHl3IIEC; "
+                "bili_jct=1d9de7b20319db3a50de93ab40efc98c; sid=6cmgi7c3; "
+                "rpdid=|(klY~u~luum0J'u~JJuRR)|Y; "
+                "bp_t_offset_34755469=1006338686020747264; "
+                "b_lsid=147655A4_1938A5E9A84")
+    __user_agent = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 "
+                    "Safari/537.36 Edg/131.0.0.0")
+
+    def set_cookie(self, cookie: str):
+        self.__cookie = cookie
+
+    def set_user_agent(self, user_agent: str):
+        self.__user_agent = user_agent
 
     def get_content(self, url):
         self.__spider(url)
@@ -22,10 +47,8 @@ class SingleBilibiliVideoStrategy(SpiderStrategyInterface):
         headers = {
             # Referer 防盗链 告诉服务器你请求链接是从哪里跳转过来的
             "Referer": url,
-
-            "cookie": "CURRENT_FNVAL=4048; buvid3=291F6CD9-AE81-5041-66BB-C6570C10199689909infoc; b_nut=1727956989; _uuid=10FD2F1EE-1087C-A3E7-5311-5C9951103986F90506infoc; buvid4=F1B3D5A3-9F01-8A29-BCBB-4653B9ACC04890525-024100312-hGb8GhyCXnf9C1xrfP1UYw%3D%3D; enable_web_push=DISABLE; home_feed_column=5; browser_resolution=1432-782; DedeUserID=34755469; DedeUserID__ckMd5=25f688f3014c8d3f; LIVE_BUVID=AUTO4017279570403239; PVID=1; header_theme_version=CLOSE; fingerprint=49cc01ae66394e9c1d0dfae03e88f174; buvid_fp_plain=undefined; buvid_fp=49cc01ae66394e9c1d0dfae03e88f174; bsource=search_bing; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzM0MDM5OTksImlhdCI6MTczMzE0NDczOSwicGx0IjotMX0.KlnrSNt4eiZ70fztvQBf1KKR5zftvKcJcfYqnv_mOck; bili_ticket_expires=1733403939; SESSDATA=a9eb2bc7%2C1748696800%2C007a2%2Ac2CjAWsFkmJNFJdjdPEMyDid7SozOEJUwGPg5Bb2p7_59s81tniyOKUYXv03v6MF3ee3ISVkdTV0JEbkZIeHljTjQ5ajVjanROY2hpdnRialA2cVlIRFBFcVNyR3ZSRHFCMjRZZFBIRVd3WTExcmgyUW1ZNUZHM3dBc2NtWEc3bHNCeTBTMkJxVHl3IIEC; bili_jct=1d9de7b20319db3a50de93ab40efc98c; sid=6cmgi7c3; rpdid=|(klY~u~luum0J'u~JJuRR)|Y; bp_t_offset_34755469=1006338686020747264; b_lsid=147655A4_1938A5E9A84",
-
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
+            "cookie": self.__cookie,
+            "user-agent": self.__user_agent
         }
 
         response = requests.get(url=url, headers=headers)
