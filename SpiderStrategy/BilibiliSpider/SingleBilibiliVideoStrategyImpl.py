@@ -7,14 +7,18 @@ import requests
 import hashlib
 
 from SpiderStrategy.SpiderStrategyInterface import SpiderStrategyInterface
+from Utils.FileUtils import FileUtils
+from Utils.DownloadUtils import DownloadUtils
 
 
 class SingleBilibiliVideoStrategy(SpiderStrategyInterface):
+    __save_dir_name = 'BilibiliVideo'
+
     def get_content(self, url):
         self.__spider(url)
 
     def __spider(self, url):
-        print("开始爬取数据.....")
+        print("b站开始爬取视频....")
         headers = {
             # Referer 防盗链 告诉服务器你请求链接是从哪里跳转过来的
             "Referer": url,
@@ -90,31 +94,32 @@ class SingleBilibiliVideoStrategy(SpiderStrategyInterface):
         play_json_data = play_response.json()
         video_url = play_json_data['data']['dash']['video'][0]['baseUrl']
         audio_url = play_json_data['data']['dash']['audio'][0]['baseUrl']
-        video_content = requests.get(url=video_url, headers=headers).content
-        audio_content = requests.get(url=audio_url, headers=headers).content
+        video_content = requests.get(url=video_url,
+                                     headers=headers,
+                                     stream=True)
+        audio_content = requests.get(url=audio_url,
+                                     headers=headers,
+                                     stream=True)
 
         # 保存视频与音频
-        print("爬取完成，下载视频与音频......")
-        dir_path = os.path.join(os.getcwd(), 'BilibiliVideo')
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
+        dir_path = os.path.join(FileUtils.get_project_dir(), self.__save_dir_name)
+        FileUtils.create_dir(dir_path)
         video_file_path = os.path.join(dir_path, title + '.mp4')
+        DownloadUtils.download_file(video_file_path, video_content,
+                                    f'正在下载{title}视频中......')
         audio_file_path = os.path.join(dir_path, title + '.mp3')
-        with open(video_file_path, mode='wb') as v:
-            v.write(video_content)
-        with open(audio_file_path, mode='wb') as a:
-            a.write(audio_content)
+        DownloadUtils.download_file(audio_file_path, audio_content,
+                                    f'正在下载{title}音频中......')
 
         # 音、视频合并
         print("音、视频合并......")
         merge_file_path = os.path.join(dir_path, title + '_output.mp4')
-        video_audio_merge_cmd = f'ffmpeg -i {video_file_path} -i {audio_file_path} -c:v copy -c:a aac -strict experimental {merge_file_path}'
-        subprocess.run(video_audio_merge_cmd, shell=True)
+        FileUtils.video_merge_audio(video_file_path,
+                                    audio_file_path,
+                                    merge_file_path)
 
         # 删除分开的音频和视频文件
-        if os.path.exists(video_file_path):
-            os.remove(video_file_path)
-        if os.path.exists(audio_file_path):
-            os.remove(audio_file_path)
+        FileUtils.delete_file(video_file_path)
+        FileUtils.delete_file(audio_file_path)
 
         print("完成......")
