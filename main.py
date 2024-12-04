@@ -1,7 +1,8 @@
 from Spider import Spider
 from SpiderStrategy.BilibiliSpider.SingleBilibiliVideoStrategyImpl import SingleBilibiliVideoStrategy
-from SpiderStrategy.TikTokSpider.TikTokVideoByAuthorStrategyImpl import TikTokVideoByAuthorStrategy
+from SpiderStrategy.TikTokSpider.SingleTikTokVideoStrategyImpl import SingleTikTokVideoStrategy
 from SpiderStrategy.YouTubeSpider.SingleYouTubeVideoStrategyImpl import SingleYouTubeVideoStrategy
+
 
 if __name__ == "__main__":
     spider = Spider()
@@ -18,7 +19,8 @@ if __name__ == "__main__":
     # spider.setSpiderStrategy(singleYouTubeVideoStrategy)
     # spider.getContent(url)
 
-    # 从作者页面爬取抖音视频
-    tikTokVideoByAuthorStrategy = TikTokVideoByAuthorStrategy()
-    spider.setSpiderStrategy(tikTokVideoByAuthorStrategy)
-    spider.getContent("")
+    # TikTok单个视频爬取
+    url = 'https://www.douyin.com/user/MS4wLjABAAAAONnizyktEAHaD6-RzkhIpx95eucJ0WfdfWHzzNgZ3CuPnhDbjEiXl1bCkOlhDSul?from_tab_name=main&modal_id=7444034558456040742&vid=7438929463808773426'
+    singleTikTokVideoStrategy = SingleTikTokVideoStrategy()
+    spider.setSpiderStrategy(singleTikTokVideoStrategy)
+    spider.getContent(url)
