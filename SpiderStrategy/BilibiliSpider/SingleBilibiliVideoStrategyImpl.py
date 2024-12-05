@@ -53,7 +53,7 @@ class SingleBilibiliVideoStrategy(SpiderStrategyInterface):
 
         response = requests.get(url=url, headers=headers)
         html = response.text
-        title = re.findall('title="(.*?)"', html)[0]
+        title = re.findall('title="(.*?)"', html)[0].replace(' ', '')
 
         # 请求视频文件信息
         play_url = "https://api.bilibili.com/x/player/wbi/playurl"

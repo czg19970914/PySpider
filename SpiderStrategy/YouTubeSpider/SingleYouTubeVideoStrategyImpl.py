@@ -1,23 +1,30 @@
 # -*- coding: utf-8 -*-
 import json
+import os
 import re
 import requests
+import yt_dlp
 
 from SpiderStrategy.SpiderStrategyInterface import SpiderStrategyInterface
+from Utils.FileUtils import FileUtils
 
 
 class SingleYouTubeVideoStrategy(SpiderStrategyInterface):
+    __save_dir_name = 'YoutubeVideo'
+    __cookie = ''
+    __user_agent = ''
+
     def set_cookie(self, cookie: str):
         pass
 
     def set_user_agent(self, user_agent: str):
         pass
 
-    def get_content(self, url):
+    def get_content(self, url: str):
         self.__spider(url)
 
     def __spider(self, url):
-        print("开始爬取数据.....")
+        print("开始爬取Youtube视频.....")
 
         headers = {
             'referer': url,
@@ -35,14 +42,25 @@ class SingleYouTubeVideoStrategy(SpiderStrategyInterface):
 
         # print(play_json)
         title = play_json['videoDetails']['title']
-        video_url = play_json['streamingData']['adaptiveFormats'][0]['url']
-        video_content_length = play_json['streamingData']['adaptiveFormats'][0]['contentLength']
-        audio_url = play_json['streamingData']['adaptiveFormats'][-2]['url']
-        print(title)
-        print(video_content_length)
-        print(video_url)
-        print(audio_url)
+        self.__download_video_by_google_api(url, title)
+        # video_url = play_json['streamingData']['adaptiveFormats'][0]['url']
+        # video_content_length = play_json['streamingData']['adaptiveFormats'][0]['contentLength']
+        # audio_url = play_json['streamingData']['adaptiveFormats'][-2]['url']
 
         # 现在这个url，访问403，无法爬取，其它资源没有发现视频对应的下载链接
-        video_content = requests.get(url=video_url, stream=True)
-        print(video_content)
+        # video_content = requests.get(url=video_url, stream=True)
+        # print(video_content)
+
+    def __download_video_by_google_api(self, url: str, title: str):
+        dir_path = os.path.join(FileUtils.get_project_dir(), self.__save_dir_name)
+        FileUtils.create_dir(dir_path)
+        video_file_path = os.path.join(dir_path, title + '.mp4')
+        cookie_file_path = os.path.join(dir_path, 'cookies.txt')
+
+        # 设置参数，估计要查看文档
+        ydl_opts = {
+            'outtmpl': video_file_path,
+            'cookiefile': cookie_file_path
+        }
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download(url)
