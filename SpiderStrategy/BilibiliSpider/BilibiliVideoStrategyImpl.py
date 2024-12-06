@@ -10,7 +10,7 @@ from Utils.FileUtils import FileUtils
 from Utils.DownloadUtils import DownloadUtils
 
 
-class SingleBilibiliVideoStrategy(SpiderStrategyInterface):
+class BilibiliVideoStrategy(SpiderStrategyInterface):
     __save_dir_name = 'BilibiliVideo'
     __cookie = ("CURRENT_FNVAL=4048; buvid3=291F6CD9-AE81-5041-66BB-C6570C10199689909infoc; b_nut=1727956989; "
                 "_uuid=10FD2F1EE-1087C-A3E7-5311-5C9951103986F90506infoc; "
@@ -40,9 +40,9 @@ class SingleBilibiliVideoStrategy(SpiderStrategyInterface):
         self.__user_agent = user_agent
 
     def get_content(self, url):
-        self.__spider(url)
+        self.__spider_single_video(url)
 
-    def __spider(self, url):
+    def __spider_single_video(self, url):
         print("b站开始爬取视频....")
         headers = {
             # Referer 防盗链 告诉服务器你请求链接是从哪里跳转过来的

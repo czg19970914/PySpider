@@ -9,7 +9,7 @@ from SpiderStrategy.SpiderStrategyInterface import SpiderStrategyInterface
 from Utils.FileUtils import FileUtils
 
 
-class SingleYouTubeVideoStrategy(SpiderStrategyInterface):
+class YouTubeVideoStrategy(SpiderStrategyInterface):
     __save_dir_name = 'YoutubeVideo'
     __cookie = ''
     __user_agent = ''
@@ -21,9 +21,9 @@ class SingleYouTubeVideoStrategy(SpiderStrategyInterface):
         pass
 
     def get_content(self, url: str):
-        self.__spider(url)
+        self.__spider_single_video(url)
 
-    def __spider(self, url):
+    def __spider_single_video(self, url):
         print("开始爬取Youtube视频.....")
 
         headers = {
