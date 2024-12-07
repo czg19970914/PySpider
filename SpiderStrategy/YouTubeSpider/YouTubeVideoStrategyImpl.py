@@ -11,14 +11,14 @@ from Utils.FileUtils import FileUtils
 
 class YouTubeVideoStrategy(SpiderStrategyInterface):
     __save_dir_name = 'YoutubeVideo'
-    __cookie = ''
-    __user_agent = ''
+    __cookie = 'PREF=tz=Asia.Shanghai; VISITOR_INFO1_LIVE=YPxV_O5ALEQ; VISITOR_PRIVACY_METADATA=CgJKUBIEGgAgWA%3D%3D; SID=g.a000rAjq9eNI0irtMd5Hh53lAwIu3BS4G3VwjJvvFx3wzDKifCdDxPLO8j63Y8MOgC57fd9XMgACgYKAYoSARQSFQHGX2MiDzQtXPbeOkClOgpzuymzbxoVAUF8yKowFSF9EvTjsGxMSXnUHh9i0076; __Secure-1PSID=g.a000rAjq9eNI0irtMd5Hh53lAwIu3BS4G3VwjJvvFx3wzDKifCdD5S9YfWrqTttXUZGAFSQeowACgYKAb8SARQSFQHGX2Mibf7ZMCv1A45ECmZw_fnxvBoVAUF8yKqnbkZn9k6QmN4rRxo9p0o_0076; __Secure-3PSID=g.a000rAjq9eNI0irtMd5Hh53lAwIu3BS4G3VwjJvvFx3wzDKifCdDZESD-dxCFE39eTqSgzUo_gACgYKAdQSARQSFQHGX2MiiXk-vZUiODNuTEAV7xd_-RoVAUF8yKolzOJj5vsOYQGHvuqKsSEi0076; HSID=AnwOVD8r1EXTX85m4; SSID=Af84es8fWYaxToUFd; APISID=s0RsxkZyCslwvV4F/AyEIYMYGaeuN0o0Fk; SAPISID=FbCiURTy5ZJgPNau/AjjI9c7DJwL0bCG4A; __Secure-1PAPISID=FbCiURTy5ZJgPNau/AjjI9c7DJwL0bCG4A; __Secure-3PAPISID=FbCiURTy5ZJgPNau/AjjI9c7DJwL0bCG4A; LOGIN_INFO=AFmmF2swRQIhAPY56Fr_j7JLCI9vsMpRPlTH_qA8cZ5lSEobw6OPXhB_AiBcnGSc7Dw6m5CPh8I0_fBlfxltEU31_yqEGxarN4GwOw:QUQ3MjNmelMweGpKUWxaV0o0cjRQakJOcXBFS2R6Q3N5YXY0LXlRM2ozRUJOZklXRHNORXlhSk54aUVjaENPbnlscnpyTTd4YmotZGpuR1lUUURxWm55WDRhbkc0THVWaTgtQ3gwYWhjMi1wSFBBVEE4TnMxelN5a3lNNEFJOEN0TGVYbDZLV2dvU2ZuS042enZpbnBuSjZKN0JNOExOdjBR; YSC=KcI8BT3EDWQ; __Secure-1PSIDTS=sidts-CjIBQT4rX2aRV9XpWuRJWgj2v7mLlroL7A5hA53aIlaUpYq6YwUT9oKlxClogMelLMNb8RAA; __Secure-3PSIDTS=sidts-CjIBQT4rX2aRV9XpWuRJWgj2v7mLlroL7A5hA53aIlaUpYq6YwUT9oKlxClogMelLMNb8RAA; SIDCC=AKEyXzVG3hgRDGyZ4OAGaIBrSDWHBHcpkIl1kVLHNkuMz2f_jQTEYyem8XXwNmJZo4vjFmnzEQ; __Secure-1PSIDCC=AKEyXzU6LGpruXDNmBIY_u54yxsDWh5Bj3jZ7ei4UYaKboxe4ITj3chyXriFVWQJEir-88nNWQ; __Secure-3PSIDCC=AKEyXzVA1GplYNNvFaS6hDMLa9hu5Ey9n1IIO_4MzkVt9VLlMTQESCogU-JmTFtxR66e0gpA-l8'
+    __user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
 
     def set_cookie(self, cookie: str):
-        pass
+        self.__cookie = cookie
 
     def set_user_agent(self, user_agent: str):
-        pass
+        self.__user_agent = user_agent
 
     def get_content(self, url: str):
         self.__spider_single_video(url)
@@ -28,10 +28,8 @@ class YouTubeVideoStrategy(SpiderStrategyInterface):
 
         headers = {
             'referer': url,
-
-            "cookie": "VISITOR_INFO1_LIVE=YwwfeA2Td9g; VISITOR_PRIVACY_METADATA=CgJDThIEGgAgFg%3D%3D; YSC=xoWP3oL3auc; __Secure-ROLLOUT_TOKEN=CIqu9PvS2eeaHhDz-Kjm_uWJAxjEiL_1p4uKAw%3D%3D; PREF=tz=Asia.Shanghai&f4=4000000; __Secure-1PSIDTS=sidts-CjIBQT4rX3vZ0aQwMFm6ecVDPC6VneBrjWnVWQmLgA4gPeefYyYXSx8SW301OTDeR7hbDhAA; __Secure-3PSIDTS=sidts-CjIBQT4rX3vZ0aQwMFm6ecVDPC6VneBrjWnVWQmLgA4gPeefYyYXSx8SW301OTDeR7hbDhAA; HSID=Ant9JCQb6QRxJfFxT; SSID=AC7HvlehxUJGOacX-; APISID=H-QAC9zOraNo8LIr/AusGsEyOhPQT638CW; SAPISID=dT8ntD4GA7JljVOe/ASbPpkSEhG1l01e5C; __Secure-1PAPISID=dT8ntD4GA7JljVOe/ASbPpkSEhG1l01e5C; __Secure-3PAPISID=dT8ntD4GA7JljVOe/ASbPpkSEhG1l01e5C; SID=g.a000qwjq9d5t7URkQUvr1e4B5vCt_ew2H1vHdyAAMgkR8fY7SCTzJRE-3zXTJ2S__8-7NNSFfgACgYKAUsSARQSFQHGX2MiDdJownp3u0YHJKMubG1_ChoVAUF8yKphp2H4VZS0Pn-vqqBnOPgz0076; __Secure-1PSID=g.a000qwjq9d5t7URkQUvr1e4B5vCt_ew2H1vHdyAAMgkR8fY7SCTzSXRzqUU5dXOBM4jODug74wACgYKASMSARQSFQHGX2MioYfYylPnpQCOcRWM7gM4QxoVAUF8yKpFUS6bIooIBTa48_HyNjln0076; __Secure-3PSID=g.a000qwjq9d5t7URkQUvr1e4B5vCt_ew2H1vHdyAAMgkR8fY7SCTzPxnQ4BIsVpur1ksmko0N7QACgYKASoSARQSFQHGX2Miq7MxhpdATso1GlkPXRVigBoVAUF8yKrigP5je0n-crIoHvjXKcn20076; LOGIN_INFO=AFmmF2swRQIhAP5bH69CL4e2rGrf69CKlDen0ULyXhiX9N2JTEGfLphpAiAVLEhl5_MBSGaP6FrB3yF5o3zR_g9en0dokZAVT5UfAA:QUQ3MjNmeWl6SmctbWdmdXNGS052SlByMkYyRHh2NzVkd1V0OW5oNEZLUzVIel9pZWZ1b1Y3MWV6Vm9zeXIySWFJNmd3a25FaGdwQzYzdjdKLW1SbVJnYUhLaWh0NDdBTnl1emtpc2tYQ3M2Y1RuVWdHVUxLVDRaaWppaEpKcGo1Z3FiOVRCcFZDQUpJY29PVU13SWw0dktjemFTYW1FdV9B; SIDCC=AKEyXzWqeRDAdJ-ImBKql4PFsAKcy95MYt8_9hG2Q_GOnZL8qXmmNuQo44uuEI6k8j8YOTUpHA; __Secure-1PSIDCC=AKEyXzUZ4AIXuubYmwTV760Xtoi_zAQBkQlhgntERi13jcalg8YyD7MuU1tkTfSv2e6mQv7YdA; __Secure-3PSIDCC=AKEyXzVu6-9MAFQKbfZnFoe5u4UuJyRkYSJ0d3P-h91IqNedC7LLTzCfxv_XSa3aPkLR5lzu",
-
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+            'cookie': self.__cookie,
+            "user-agent": self.__user_agent
         }
         response = requests.get(url=url, headers=headers)
         html = response.text
@@ -40,14 +38,14 @@ class YouTubeVideoStrategy(SpiderStrategyInterface):
         play_json_str = re.findall('var ytInitialPlayerResponse = (.*?);var', html)[0]
         play_json = json.loads(play_json_str)
 
-        # print(play_json)
         title = play_json['videoDetails']['title']
         self.__download_video_by_google_api(url, title)
+
         # video_url = play_json['streamingData']['adaptiveFormats'][0]['url']
         # video_content_length = play_json['streamingData']['adaptiveFormats'][0]['contentLength']
         # audio_url = play_json['streamingData']['adaptiveFormats'][-2]['url']
-
-        # 现在这个url，访问403，无法爬取，其它资源没有发现视频对应的下载链接
+        #
+        # # 现在这个url，访问403，无法爬取，其它资源没有发现视频对应的下载链接
         # video_content = requests.get(url=video_url, stream=True)
         # print(video_content)
 
