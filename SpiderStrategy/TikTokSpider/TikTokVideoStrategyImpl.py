@@ -16,16 +16,18 @@ class TikTokVideoStrategy(SpiderStrategyInterface):
     __user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
 
     def get_content(self, url: str):
-        self.__spider_single_video(url)
-
-    def __spider_single_video(self, url: str):
-        print("开始抖音视频爬取......")
         headers = {
             # Referer 防盗链 告诉服务器你请求链接是从哪里跳转过来的
             "Referer": url,
             "cookie": self.__cookie,
             "user-agent": self.__user_agent
         }
+        # self.__spider_single_video(url, headers)
+        self.__spider_videos_by_author(url, headers)
+
+    def __spider_single_video(self, url: str, headers: dict):
+        print("开始抖音视频爬取......")
+
         response = requests.get(url=url, headers=headers)
         html = response.text
 
@@ -47,6 +49,54 @@ class TikTokVideoStrategy(SpiderStrategyInterface):
                                     f'正在下载{title}视频中......')
 
         print("爬取完成")
+
+    def __spider_videos_by_author(self, url: str, headers: dict):
+        video_message_url = 'https://www.douyin.com/aweme/v1/web/aweme/post/'
+        params_data = {
+            'device_platform': 'webapp',
+            'aid': '6383',
+            'channel': 'channel_pc_web',
+            'sec_user_id': 'MS4wLjABAAAA5-cFNtBT226GzBqGdIbDTw05CbD7Jbrk3WMjDflDZ4r2QWeRNz8K8m3PIlfofeTR',
+            'max_cursor': '0',
+            'locate_item_id': '7445650987982802187',
+            'locate_query': 'false',
+            'show_live_replay_strategy': '1',
+            'need_time_list': '1',
+            'time_list_query': '0',
+            'whale_cut_token': '',
+            'cut_version': '1',
+            'count': '18',
+            'publish_video_strategy_type': '2',
+            'from_user_page': '1',
+            'update_version_code': '17400',
+            'pc_client_type': '1',
+            'pc_libra_divert': 'Windows',
+            'version_code': '290100',
+            'version_name': '29.1.0',
+            'cookie_enabled': 'true',
+            'screen_width': '1920',
+            'screen_height': '1080',
+            'browser_language': 'zh-CN',
+            'browser_platform': 'Win32',
+            'browser_name': 'Edge',
+            'browser_version': '131.0.0.0',
+            'browser_online': 'true',
+            'engine_name': 'Blink',
+            'engine_version': '131.0.0.0',
+            'os_name': 'Windows',
+            'os_version': '10',
+            'cpu_core_num': '16',
+            'device_memory': '8',
+            'platform': 'PC',
+            'downlink': '10',
+            'effective_type': '4g',
+            'round_trip_time': '50',
+            'webid': '7446003708670608922',
+            'uifid': '26198ff38959f773c63a6fc9b3542e2fdcfd2f10d2782124ed1adc24709862df383a39dbf33ef686ec3bef376222b571ace7af0a0b4923ea95d9f0310137549e1059e47a8ac447caae1dcbbe6768ff1049e849293f3e9bdf68c53288921dba5b62eaae51ac69b12a6d99707d9a79d5423a4bd7c66686d78871733bd001708dc2d3694c8c159a2729b52fd7c002e7d3731e606915a8830766115031c8b811e732',
+            'msToken': '26198ff38959f773c63a6fc9b3542e2fdcfd2f10d2782124ed1adc24709862df383a39dbf33ef686ec3bef376222b571ace7af0a0b4923ea95d9f0310137549e1059e47a8ac447caae1dcbbe6768ff1049e849293f3e9bdf68c53288921dba5b62eaae51ac69b12a6d99707d9a79d5423a4bd7c66686d78871733bd001708dc2d3694c8c159a2729b52fd7c002e7d3731e606915a8830766115031c8b811e732&msToken=rtKRYtjgNkD6zuMRuGUirfEqpiQeziv9ruBw1J94SFhPe1Vm35er2y_Hz3wMSo3wAzB2996r1a-KcdX3arTN1F8WcPgwddhXau9C_tcc569Ll3bAo6hOCMa6e4vQ80JFsh3ackO_OTw4KkHVWTcCYN2fX2c2lb9SZRq3P2AVQ6eN&a_bogus=xy0VhqUjmpQRCd%2Fb8CcGSyxUlCElNsWyGHT2W75Py5apYXUOa8NwknGScooN4pVJH8pzhCVHIVMMYDncMTXTZqrpumkvu%2FvjJsVV98mLhqwmGUTmLN8OeuRFKw0xUmsi-%2FVXi1UV%2FUHqgjnAkqdu%2FQA99KLeQcuBBZxWk%2FYci9BhZzgADZn-PdSpiXrcUWAU&verifyFp=verify_m4fj4khg_HIw21TFo_reky_4Z0v_9hQ3_XmmPMAOzLIHc&fp=verify_m4fj4khg_HIw21TFo_reky_4Z0v_9hQ3_XmmPMAOzLIHc'
+        }
+        response = requests.get(url=video_message_url, params=params_data, headers=headers)
+        print(response.json())
 
     def set_cookie(self, cookie: str):
         self.__cookie = cookie
