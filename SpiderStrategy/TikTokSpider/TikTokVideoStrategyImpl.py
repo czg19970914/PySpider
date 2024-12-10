@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import re
 from urllib.parse import unquote
 
@@ -51,14 +52,33 @@ class TikTokVideoStrategy(SpiderStrategyInterface):
         print("爬取完成")
 
     def __spider_videos_by_author(self, url: str, headers: dict):
+        url = 'https://www.douyin.com/user/MS4wLjABAAAAMYdb3K8u26PNmlbJ7fH1w0Mm8Ck2XDV6I_lDG1d-704?from_tab_name=main&vid=7443441710224477450'
+        response = requests.get(url=url, headers=headers)
+        html = response.text
+        message = re.findall('<script id="RENDER_DATA" type="application/json">(.*?)</script>', html)[0]
+        # 信息需要解码
+        message_decode = unquote(message)
+        message_json_data = json.loads(message_decode)
+        # print(message_json_data)
+
         video_message_url = 'https://www.douyin.com/aweme/v1/web/aweme/post/'
+
+        sec_user_id = url.split('?')[0].split('/')[-1]
+        max_cursor = '0'
+        locate_item_id = re.findall('vid=(\d+)', url)[0]
+        screen_width = re.findall('dy_swidth=(\d+);', self.__cookie)[0]
+        screen_height = re.findall('dy_sheight=(\d+);', self.__cookie)[0]
+        round_trip_time = '100'
+        webid = message_json_data['app']['odin']['user_unique_id']
+        uifid = re.findall('UIFID=(.*?);', self.__cookie)[0]
+        msToken = self.__get_ms_token()
         params_data = {
             'device_platform': 'webapp',
             'aid': '6383',
             'channel': 'channel_pc_web',
-            'sec_user_id': 'MS4wLjABAAAA5-cFNtBT226GzBqGdIbDTw05CbD7Jbrk3WMjDflDZ4r2QWeRNz8K8m3PIlfofeTR',
-            'max_cursor': '0',
-            'locate_item_id': '7445650987982802187',
+            'sec_user_id': sec_user_id,
+            'max_cursor': max_cursor,
+            'locate_item_id': locate_item_id,
             'locate_query': 'false',
             'show_live_replay_strategy': '1',
             'need_time_list': '1',
@@ -68,14 +88,14 @@ class TikTokVideoStrategy(SpiderStrategyInterface):
             'count': '18',
             'publish_video_strategy_type': '2',
             'from_user_page': '1',
-            'update_version_code': '17400',
+            'update_version_code': '170400',
             'pc_client_type': '1',
             'pc_libra_divert': 'Windows',
             'version_code': '290100',
             'version_name': '29.1.0',
             'cookie_enabled': 'true',
-            'screen_width': '1920',
-            'screen_height': '1080',
+            'screen_width': screen_width,
+            'screen_height': screen_height,
             'browser_language': 'zh-CN',
             'browser_platform': 'Win32',
             'browser_name': 'Edge',
@@ -90,13 +110,27 @@ class TikTokVideoStrategy(SpiderStrategyInterface):
             'platform': 'PC',
             'downlink': '10',
             'effective_type': '4g',
-            'round_trip_time': '50',
-            'webid': '7446003708670608922',
-            'uifid': '26198ff38959f773c63a6fc9b3542e2fdcfd2f10d2782124ed1adc24709862df383a39dbf33ef686ec3bef376222b571ace7af0a0b4923ea95d9f0310137549e1059e47a8ac447caae1dcbbe6768ff1049e849293f3e9bdf68c53288921dba5b62eaae51ac69b12a6d99707d9a79d5423a4bd7c66686d78871733bd001708dc2d3694c8c159a2729b52fd7c002e7d3731e606915a8830766115031c8b811e732',
-            'msToken': '26198ff38959f773c63a6fc9b3542e2fdcfd2f10d2782124ed1adc24709862df383a39dbf33ef686ec3bef376222b571ace7af0a0b4923ea95d9f0310137549e1059e47a8ac447caae1dcbbe6768ff1049e849293f3e9bdf68c53288921dba5b62eaae51ac69b12a6d99707d9a79d5423a4bd7c66686d78871733bd001708dc2d3694c8c159a2729b52fd7c002e7d3731e606915a8830766115031c8b811e732&msToken=rtKRYtjgNkD6zuMRuGUirfEqpiQeziv9ruBw1J94SFhPe1Vm35er2y_Hz3wMSo3wAzB2996r1a-KcdX3arTN1F8WcPgwddhXau9C_tcc569Ll3bAo6hOCMa6e4vQ80JFsh3ackO_OTw4KkHVWTcCYN2fX2c2lb9SZRq3P2AVQ6eN&a_bogus=xy0VhqUjmpQRCd%2Fb8CcGSyxUlCElNsWyGHT2W75Py5apYXUOa8NwknGScooN4pVJH8pzhCVHIVMMYDncMTXTZqrpumkvu%2FvjJsVV98mLhqwmGUTmLN8OeuRFKw0xUmsi-%2FVXi1UV%2FUHqgjnAkqdu%2FQA99KLeQcuBBZxWk%2FYci9BhZzgADZn-PdSpiXrcUWAU&verifyFp=verify_m4fj4khg_HIw21TFo_reky_4Z0v_9hQ3_XmmPMAOzLIHc&fp=verify_m4fj4khg_HIw21TFo_reky_4Z0v_9hQ3_XmmPMAOzLIHc'
+            'round_trip_time': round_trip_time,
+            'webid': webid,
+            'uifid': uifid,
+            'msToken': msToken
         }
         response = requests.get(url=video_message_url, params=params_data, headers=headers)
-        print(response.json())
+        videos_json_data = response.json()
+        has_more = (videos_json_data['has_more'] == 1)  # 是否有下一页
+        max_cursor = videos_json_data['max_cursor']  # 如果有下一页替换掉这个值进入下一页
+        print(videos_json_data)
+
+    def __get_ms_token(self, random_length=180):
+        """
+        根据传入长度产生随机字符串
+        """
+        random_str = ''
+        base_str = 'ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz0123456789='
+        length = len(base_str) - 1
+        for _ in range(random_length):
+            random_str += base_str[random.randint(0, length)]
+        return random_str
 
     def set_cookie(self, cookie: str):
         self.__cookie = cookie
