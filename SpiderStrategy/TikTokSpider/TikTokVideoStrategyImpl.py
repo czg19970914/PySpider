@@ -2,6 +2,7 @@ import json
 import os
 import random
 import re
+import time
 from urllib.parse import unquote
 
 import requests
@@ -52,7 +53,7 @@ class TikTokVideoStrategy(SpiderStrategyInterface):
         print("爬取完成")
 
     def __spider_videos_by_author(self, url: str, headers: dict):
-        url = 'https://www.douyin.com/user/MS4wLjABAAAAMYdb3K8u26PNmlbJ7fH1w0Mm8Ck2XDV6I_lDG1d-704?from_tab_name=main&vid=7443441710224477450'
+        url = 'https://www.douyin.com/user/MS4wLjABAAAAeLO8z8xi-SGMkpcrG7MXYogGIlD1vst53dlMwLCZnFtkQv6soNyVYLxXO-89zWkZ?from_tab_name=main'
         response = requests.get(url=url, headers=headers)
         html = response.text
         message = re.findall('<script id="RENDER_DATA" type="application/json">(.*?)</script>', html)[0]
@@ -65,61 +66,74 @@ class TikTokVideoStrategy(SpiderStrategyInterface):
 
         sec_user_id = url.split('?')[0].split('/')[-1]
         max_cursor = '0'
-        locate_item_id = re.findall('vid=(\d+)', url)[0]
+        locate_item_id = ''
+        locate_item_id_list = re.findall('vid=(\d+)', url)
+        if locate_item_id_list is not None and len(locate_item_id_list) > 0:
+            locate_item_id = re.findall('vid=(\d+)', url)[0]
         screen_width = re.findall('dy_swidth=(\d+);', self.__cookie)[0]
         screen_height = re.findall('dy_sheight=(\d+);', self.__cookie)[0]
         round_trip_time = '100'
         webid = message_json_data['app']['odin']['user_unique_id']
         uifid = re.findall('UIFID=(.*?);', self.__cookie)[0]
         msToken = self.__get_ms_token()
-        params_data = {
-            'device_platform': 'webapp',
-            'aid': '6383',
-            'channel': 'channel_pc_web',
-            'sec_user_id': sec_user_id,
-            'max_cursor': max_cursor,
-            'locate_item_id': locate_item_id,
-            'locate_query': 'false',
-            'show_live_replay_strategy': '1',
-            'need_time_list': '1',
-            'time_list_query': '0',
-            'whale_cut_token': '',
-            'cut_version': '1',
-            'count': '18',
-            'publish_video_strategy_type': '2',
-            'from_user_page': '1',
-            'update_version_code': '170400',
-            'pc_client_type': '1',
-            'pc_libra_divert': 'Windows',
-            'version_code': '290100',
-            'version_name': '29.1.0',
-            'cookie_enabled': 'true',
-            'screen_width': screen_width,
-            'screen_height': screen_height,
-            'browser_language': 'zh-CN',
-            'browser_platform': 'Win32',
-            'browser_name': 'Edge',
-            'browser_version': '131.0.0.0',
-            'browser_online': 'true',
-            'engine_name': 'Blink',
-            'engine_version': '131.0.0.0',
-            'os_name': 'Windows',
-            'os_version': '10',
-            'cpu_core_num': '16',
-            'device_memory': '8',
-            'platform': 'PC',
-            'downlink': '10',
-            'effective_type': '4g',
-            'round_trip_time': round_trip_time,
-            'webid': webid,
-            'uifid': uifid,
-            'msToken': msToken
-        }
-        response = requests.get(url=video_message_url, params=params_data, headers=headers)
-        videos_json_data = response.json()
-        has_more = (videos_json_data['has_more'] == 1)  # 是否有下一页
-        max_cursor = videos_json_data['max_cursor']  # 如果有下一页替换掉这个值进入下一页
-        print(videos_json_data)
+        has_more = True
+        while has_more:
+            params_data = {
+                'device_platform': 'webapp',
+                'aid': '6383',
+                'channel': 'channel_pc_web',
+                'sec_user_id': sec_user_id,
+                'max_cursor': max_cursor,
+                'locate_item_id': locate_item_id,
+                'locate_query': 'false',
+                'show_live_replay_strategy': '1',
+                'need_time_list': '1',
+                'time_list_query': '0',
+                'whale_cut_token': '',
+                'cut_version': '1',
+                'count': '18',
+                'publish_video_strategy_type': '2',
+                'from_user_page': '1',
+                'update_version_code': '170400',
+                'pc_client_type': '1',
+                'pc_libra_divert': 'Windows',
+                'version_code': '290100',
+                'version_name': '29.1.0',
+                'cookie_enabled': 'true',
+                'screen_width': screen_width,
+                'screen_height': screen_height,
+                'browser_language': 'zh-CN',
+                'browser_platform': 'Win32',
+                'browser_name': 'Edge',
+                'browser_version': '131.0.0.0',
+                'browser_online': 'true',
+                'engine_name': 'Blink',
+                'engine_version': '131.0.0.0',
+                'os_name': 'Windows',
+                'os_version': '10',
+                'cpu_core_num': '16',
+                'device_memory': '8',
+                'platform': 'PC',
+                'downlink': '10',
+                'effective_type': '4g',
+                'round_trip_time': round_trip_time,
+                'webid': webid,
+                'uifid': uifid,
+                'msToken': msToken
+            }
+            response = requests.get(url=video_message_url, params=params_data, headers=headers)
+            videos_json_data = response.json()
+            has_more = (videos_json_data['has_more'] == 1)  # 是否有下一页
+            max_cursor = videos_json_data['max_cursor']  # 如果有下一页替换掉这个值进入下一页
+            videos_message_list = videos_json_data['aweme_list']
+            for video_message in videos_message_list:
+                # print(video_message['desc'])
+                # print(video_message['aweme_id'])
+                video_url = url + '&modal_id=' + video_message['aweme_id']
+                self.__spider_single_video(video_url, headers)
+                time.sleep(1)
+            time.sleep(1)
+
 
     def __get_ms_token(self, random_length=180):
         """
